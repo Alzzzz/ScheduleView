@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/bg_border_right_top"
+                >
+    <ImageView
+            android:id="@+id/iv_icm_mark"
+            android:layout_height="50dp"
+            android:layout_width="35dp"
+            android:gravity="center"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:scaleType="center"
+            android:background="@android:color/white"
+            android:src="@drawable/bg_calendar_mark"
+            android:text=""
+        />
+</LinearLayout>
