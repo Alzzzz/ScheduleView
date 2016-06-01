@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CalendarMarkView">
+        <!-- 行数 不包括表头  unclude row header-->
+        <attr name="cmv_rowsnum" format="integer"/>
+        <!-- 列数 不包括表头 unclude colum header-->
+        <attr name="cmv_columnum" format="integer"/>
+    </declare-styleable>
+</resources>

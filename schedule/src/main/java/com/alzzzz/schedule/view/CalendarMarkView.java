@@ -1,11 +1,14 @@
 package com.alzzzz.schedule.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.alzzzz.schedule.R;
@@ -24,34 +27,89 @@ public class CalendarMarkView extends LinearLayout {
     private List<String> weekList = new ArrayList<String>();
     private List<String> lineTitleList = new ArrayList<String>();
     private List<String> mDataList;
+    private ListAdapter mAdapter;
+    private int rowsNum = 0;
+    private int columNum = 0;
 
     public CalendarMarkView(Context context) {
-        super(context);
-        initView();
+        this(context, null);
     }
 
     public CalendarMarkView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initView();
+        this(context, attrs, 0);
     }
 
     public CalendarMarkView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initView();
+        this(context, attrs, defStyleAttr, 0);
     }
 
     public CalendarMarkView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        final TypedArray a = context.obtainStyledAttributes(
+                attrs, R.styleable.CalendarMarkView, defStyleAttr, defStyleRes);
+        columNum = a.getInt(R.styleable.CalendarMarkView_cmv_columnum, 0);
+        rowsNum = a.getInt(R.styleable.CalendarMarkView_cmv_rowsnum, 0);
+        a.recycle();
         initView();
+    }
+
+
+    public void setAdapter(ListAdapter mAdapter){
+        this.mAdapter = mAdapter;
+        setupView();
+    }
+
+    private void setupView() {
+        initRowsHeader();
+        initColumHeader();
+        addView(getLineView());
     }
 
     private void initView() {
         setOrientation(VERTICAL);
 
         initData();
+
 //        initTableTitle();
 //        initTableLine();
 
+    }
+
+    private void initRowsHeader() {
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        View oneLineTitleView = getLineTitleView();
+        updateViewBG(oneLineTitleView);
+        linearLayout.setOrientation(HORIZONTAL);
+        linearLayout.addView(oneLineTitleView);
+        // TODO: 16/6/1 判断xml中定义的行数和传进来的表头的数据
+        int size = columNum > 0? columNum:7;
+        for (int i = 0; i < size; i++) {
+            View item = getItemView();
+            updateViewBule(item);
+            if (weekList.size() > i)
+                setItemText(item, weekList.get(i));
+            linearLayout.addView(item);
+        }
+        addView(linearLayout);
+    }
+
+    public void initColumHeader(){
+        for (int i = 0; i < 6; i++) {
+            LinearLayout linearLayout = new LinearLayout(getContext());
+            View lineTitleView = getLineTitleView();
+            setLineTitleText(lineTitleView, lineTitleList.get(i), lineTitleList.get(i + 1));
+            linearLayout.addView(lineTitleView);
+            for (int j = 0; j < 7; j++) {
+                if (mAdapter != null && mAdapter.getCount()>0){
+                    int pos = i*7+j;
+                    View itemView = mAdapter.getView(pos, null, this);
+//                View item = getMarkItemView();
+//                showMarkView(item, lineTitleList.get(i + 1), weekList.get(j));
+                    linearLayout.addView(itemView);
+                }
+            }
+            addView(linearLayout);
+        }
     }
 
     public void showCalendar(List<String> list) {

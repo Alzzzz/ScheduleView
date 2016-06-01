@@ -3,6 +3,7 @@ package com.alzzzz.scheduleview;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.alzzzz.schedule.adapter.SimpleMarkAdapter;
 import com.alzzzz.schedule.view.CalendarMarkView;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         list.add("14三");
 
         calendar_view = (CalendarMarkView) findViewById(R.id.calendar_view);
-        calendar_view.showCalendar(list);
+        calendar_view.setAdapter(new SimpleMarkAdapter(this));
+//        calendar_view.showCalendar(list);
     }
 }
