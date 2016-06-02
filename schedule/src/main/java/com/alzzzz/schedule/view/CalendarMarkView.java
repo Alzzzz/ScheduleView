@@ -99,7 +99,8 @@ public class CalendarMarkView extends LinearLayout {
             View lineTitleView = getLineTitleView();
             setLineTitleText(lineTitleView, lineTitleList.get(i), lineTitleList.get(i + 1));
             linearLayout.addView(lineTitleView);
-            for (int j = 0; j < 7; j++) {
+            int size = columNum > 0? columNum:7;
+            for (int j = 0; j < size; j++) {
                 if (mAdapter != null && mAdapter.getCount()>0){
                     int pos = i*7+j;
                     View itemView = mAdapter.getView(pos, null, this);
