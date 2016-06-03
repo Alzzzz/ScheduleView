@@ -8,6 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@android:color/darker_gray"
     tools:context="com.alzzzz.scheduleview.MainActivity">
 
     <TextView
@@ -17,8 +18,8 @@
 
     <com.alzzzz.schedule.view.CalendarMarkView
         android:id="@+id/calendar_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        apps:cmv_rowsnum="8"
-        apps:cmv_columnum="8"/>
+        apps:cmv_rowsnum="6"
+        apps:cmv_columnum="7"/>
 </RelativeLayout>

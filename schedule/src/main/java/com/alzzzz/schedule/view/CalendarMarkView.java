@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import com.alzzzz.schedule.R;
 import com.alzzzz.schedule.provider.CalendarProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,12 +22,15 @@ import java.util.List;
  */
 public class CalendarMarkView extends LinearLayout {
 
-    private List<String> weekList = new ArrayList<String>();
-    private List<String> lineTitleList = new ArrayList<String>();
     private List<String> mDataList;
     private ListAdapter mAdapter;
-    private int rowsNum = 0;
-    private int columNum = 0;
+    private Context context;
+    private int rowsNum = 0;//行数 不包括表格列头
+    private int columNum = 0;//列数  不包括表格行头
+    private int rowHeaderHeight = 0;
+    private int columHeaderWidth = 0;
+    private String[] rowTitles;
+    private String[] columTitles;
 
     public CalendarMarkView(Context context) {
         this(context, null);
@@ -45,12 +46,27 @@ public class CalendarMarkView extends LinearLayout {
 
     public CalendarMarkView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        this.context = context;
         final TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.CalendarMarkView, defStyleAttr, defStyleRes);
         columNum = a.getInt(R.styleable.CalendarMarkView_cmv_columnum, 0);
         rowsNum = a.getInt(R.styleable.CalendarMarkView_cmv_rowsnum, 0);
+        rowHeaderHeight = a.getDimensionPixelSize(R.styleable.CalendarMarkView_cmv_rowheader_height, dp2px(100));
+        columHeaderWidth = a.getDimensionPixelSize(R.styleable.CalendarMarkView_cmv_columheader_width, dp2px(50));
         a.recycle();
         initView();
+    }
+
+    /** call before setAdapter.set title of rows */
+    public CalendarMarkView setRowTitle(String... rowTitles){
+        this.rowTitles = rowTitles;
+        return this;
+    }
+
+    /** call before setAdapter.set title of colum */
+    public CalendarMarkView setColumTitle(String... columTitles){
+        this.columTitles = columTitles;
+        return this;
     }
 
 
@@ -59,53 +75,86 @@ public class CalendarMarkView extends LinearLayout {
         setupView();
     }
 
+    public int getSize(){
+        int count = getColumTitleCount()+getRowTitleCount();
+        return count;
+    }
+
     private void setupView() {
         initRowsHeader();
-        initColumHeader();
+        setupTable();
         addView(getLineView());
+    }
+
+    /** 获取表头样式 */
+    private View getTableHeader() {
+        // TODO: 16/6/2 增加表头分割样式
+        View oneLineTitleView = getLineTitleView();
+        updateViewBG(oneLineTitleView);
+        LayoutParams lp = new LayoutParams(columHeaderWidth, LayoutParams.MATCH_PARENT);
+        oneLineTitleView.setLayoutParams(lp);
+        return oneLineTitleView;
     }
 
     private void initView() {
         setOrientation(VERTICAL);
 
-        initData();
+    }
 
-//        initTableTitle();
-//        initTableLine();
+    private int getRowTitleCount(){
+        int count = columNum;
+        if (rowTitles != null && count <= 0){
+            count = rowTitles.length;
+        }
+        return count;
+    }
 
+    private int getColumTitleCount(){
+        int count = rowsNum;
+        if (columTitles != null && count <= 0){
+            count = columTitles.length;
+        }
+        return count;
     }
 
     private void initRowsHeader() {
         LinearLayout linearLayout = new LinearLayout(getContext());
-        View oneLineTitleView = getLineTitleView();
-        updateViewBG(oneLineTitleView);
+        // TODO: 16/6/2 自定义表格的第一格
+
+        LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, rowHeaderHeight);
         linearLayout.setOrientation(HORIZONTAL);
-        linearLayout.addView(oneLineTitleView);
-        // TODO: 16/6/1 判断xml中定义的行数和传进来的表头的数据
-        int size = columNum > 0? columNum:7;
+        linearLayout.setLayoutParams(lp);
+        linearLayout.addView(getTableHeader());
+
+        int size = getRowTitleCount();
         for (int i = 0; i < size; i++) {
             View item = getItemView();
+            item.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
             updateViewBule(item);
-            if (weekList.size() > i)
-                setItemText(item, weekList.get(i));
+            if (rowTitles.length > i)
+                setItemText(item, rowTitles[i]);
             linearLayout.addView(item);
         }
         addView(linearLayout);
     }
 
-    public void initColumHeader(){
-        for (int i = 0; i < 6; i++) {
+    public void setupTable(){
+        int rowsCount = getColumTitleCount();
+        for (int i = 0; i < rowsCount; i++) {
             LinearLayout linearLayout = new LinearLayout(getContext());
             View lineTitleView = getLineTitleView();
-            setLineTitleText(lineTitleView, lineTitleList.get(i), lineTitleList.get(i + 1));
+            if (columTitles.length > i)
+                setLineTitleText(lineTitleView, columTitles[i]/*.get(i), lineTitleList.get(i + 1)*/);
+
+            LayoutParams lp = new LayoutParams(columHeaderWidth, LayoutParams.MATCH_PARENT);
+            lineTitleView.setLayoutParams(lp);
             linearLayout.addView(lineTitleView);
-            int size = columNum > 0? columNum:7;
+            int size = getRowTitleCount();
             for (int j = 0; j < size; j++) {
                 if (mAdapter != null && mAdapter.getCount()>0){
-                    int pos = i*7+j;
+                    int pos = i*size+j;
                     View itemView = mAdapter.getView(pos, null, this);
-//                View item = getMarkItemView();
-//                showMarkView(item, lineTitleList.get(i + 1), weekList.get(j));
+                    itemView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
                     linearLayout.addView(itemView);
                 }
             }
@@ -113,59 +162,6 @@ public class CalendarMarkView extends LinearLayout {
         }
     }
 
-    public void showCalendar(List<String> list) {
-        this.mDataList = list;
-        initTableTitle();
-        initTableLine();
-        addView(getLineView());
-    }
-
-    private void initTableLine() {
-        for (int i = 0; i < 6; i++) {
-            LinearLayout linearLayout = new LinearLayout(getContext());
-            View lineTitleView = getLineTitleView();
-            setLineTitleText(lineTitleView, lineTitleList.get(i), lineTitleList.get(i + 1));
-            linearLayout.addView(lineTitleView);
-            for (int j = 0; j < 7; j++) {
-                View item = getMarkItemView();
-                showMarkView(item, lineTitleList.get(i + 1), weekList.get(j));
-                linearLayout.addView(item);
-            }
-            addView(linearLayout);
-        }
-    }
-
-    private void initTableTitle() {
-        LinearLayout linearLayout = new LinearLayout(getContext());
-        View oneLineTitleView = getLineTitleView();
-        updateViewBG(oneLineTitleView);
-        linearLayout.setOrientation(HORIZONTAL);
-        linearLayout.addView(oneLineTitleView);
-        for (int i = 0; i < 7; i++) {
-            View item = getItemView();
-            updateViewBule(item );
-            setItemText(item, weekList.get(i));
-            linearLayout.addView(item);
-        }
-        addView(linearLayout);
-    }
-
-    private void initData() {
-        weekList.add("日");
-        weekList.add("一");
-        weekList.add("二");
-        weekList.add("三");
-        weekList.add("四");
-        weekList.add("五");
-        weekList.add("六");
-        lineTitleList.add("08:00");
-        lineTitleList.add("10:00");
-        lineTitleList.add("12:00");
-        lineTitleList.add("14:00");
-        lineTitleList.add("16:00");
-        lineTitleList.add("18:00");
-        lineTitleList.add("20:00");
-    }
 
     private View getLineTitleView() {
         return View.inflate(getContext(), R.layout.item_line_title, null);
@@ -209,12 +205,16 @@ public class CalendarMarkView extends LinearLayout {
         tv_item.setText(text);
     }
 
-    private void setLineTitleText(View view, String one, String two) {
+    private void setLineTitleText(View view, String one/*, String two*/) {
         TextView one_item = (TextView) view.findViewById(R.id.tv_ilt_title_one);
-        TextView two_item = (TextView) view.findViewById(R.id.tv_ilt_title_two);
 
         one_item.setText(one);
-        two_item.setText(two);
+//        two_item.setText(two);
+    }
+
+    private int dp2px(float dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
 }
 

@@ -16,14 +16,16 @@ import com.alzzzz.schedule.R;
  */
 public class SimpleMarkAdapter extends BaseAdapter {
     private Context mContenxt;
+    private int size;
 
-    public SimpleMarkAdapter(Context mContenxt) {
+    public SimpleMarkAdapter(Context mContenxt, int count) {
         this.mContenxt = mContenxt;
+        size = count;
     }
 
     @Override
     public int getCount() {
-        return 42;
+        return size;
     }
 
     @Override

@@ -5,5 +5,10 @@
         <attr name="cmv_rowsnum" format="integer"/>
         <!-- 列数 不包括表头 unclude colum header-->
         <attr name="cmv_columnum" format="integer"/>
+        <!-- 行头的高度 -->
+        <attr name="cmv_rowheader_height" format="dimension"/>
+        <!-- 列头的宽度 -->
+        <attr name="cmv_columheader_width" format="dimension"/>
+
     </declare-styleable>
 </resources>
