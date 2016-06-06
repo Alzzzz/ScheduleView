@@ -20,6 +20,7 @@
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        apps:cmv_columheader_width="100dp"
         apps:cmv_rowsnum="6"
         apps:cmv_columnum="7"/>
 </RelativeLayout>

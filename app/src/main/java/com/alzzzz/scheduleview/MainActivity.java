@@ -3,6 +3,7 @@ package com.alzzzz.scheduleview;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.alzzzz.schedule.adapter.BingoMarkAdapter;
 import com.alzzzz.schedule.adapter.SimpleMarkAdapter;
 import com.alzzzz.schedule.view.CalendarMarkView;
 
@@ -26,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
         calendar_view = (CalendarMarkView) findViewById(R.id.calendar_view);
         calendar_view.setRowTitle(rowsTitles);
         calendar_view.setColumTitle(columTitles);
-        calendar_view.setAdapter(new SimpleMarkAdapter(this, calendar_view.getSize()));
+        BingoMarkAdapter markAdapter = new BingoMarkAdapter(this, calendar_view.getSize());
+        markAdapter.setSelectedPos(1,2,3,10,33);
+        calendar_view.setAdapter(markAdapter);
 //        calendar_view.showCalendar(list);
     }
 }

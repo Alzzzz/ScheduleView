@@ -15,12 +15,18 @@ import com.alzzzz.schedule.R;
  * Created by sz on 16/6/1.
  */
 public class SimpleMarkAdapter extends BaseAdapter {
-    private Context mContenxt;
+    private Context mContext;
     private int size;
+    private int[] selectIndex;
 
     public SimpleMarkAdapter(Context mContenxt, int count) {
-        this.mContenxt = mContenxt;
+        this.mContext = mContenxt;
         size = count;
+    }
+
+    public void setSelectIndex(int... selectIndex){
+        this.selectIndex = selectIndex;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -40,7 +46,7 @@ public class SimpleMarkAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        convertView = LayoutInflater.from(mContenxt).inflate(R.layout.item_calendar, null);
+        convertView = LayoutInflater.from(mContext).inflate(R.layout.item_calendar, null);
         return convertView;
     }
 
